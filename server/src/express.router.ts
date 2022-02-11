@@ -1,4 +1,5 @@
 import { Express, NextFunction, Request, Response, Router } from 'express';
+import cors from "cors";
 import AccountController from './controller/account.controller';
 
 export default class ExpressRouter {
@@ -8,6 +9,7 @@ export default class ExpressRouter {
   constructor(app: Express) {
     this.router = Router();
     this.app = app;
+    this.app.use(cors());
   }
 
   public init(): void {

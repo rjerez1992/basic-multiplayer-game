@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { getRepository} from "typeorm";
-import { Account } from '../entity/Account';
+import { Account } from '../entity/account';
+import { Character } from '../entity/character';
 
 export default class AccountController {
     public static async create(req: Request, res: Response, next: NextFunction) {
@@ -13,8 +14,14 @@ export default class AccountController {
             return res.send({message: "Account already exists"});
         }
 
+        const characterRepository = getRepository(Character);  
+        let character = new Character();
+        character = await characterRepository.save(character);
+
         account = new Account(req.body.username);
+        account.character = character;
         account = await accountRepository.save(account);
+        
         res.send(account);
     }
 

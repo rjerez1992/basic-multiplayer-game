@@ -13,6 +13,7 @@
     "express"
   ],
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/dotenv": "^4.0.2",
     "@types/express": "*",
     "@types/node": "^17.0.16",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@types/ws": "^8.2.2",
+    "cors": "^2.8.5",
     "dotenv": "^5.0.1",
     "express": "4.16.2",
     "reflect-metadata": "^0.1.13",
