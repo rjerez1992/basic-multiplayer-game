@@ -1,5 +1,6 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, getRepository, JoinColumn, OneToOne} from "typeorm";
 import * as crypto from "crypto";
+import { Character } from "./character";
 
 @Entity()
 export class Account {
@@ -11,8 +12,11 @@ export class Account {
 
     @Column()
     sessionToken: string;
+    
+    @OneToOne(() => Character, {eager: true})
+    @JoinColumn()
+    character: Character;
 
-    @Column()
     isLoggedIn: boolean;
 
     public constructor(username: string){
@@ -21,7 +25,17 @@ export class Account {
         this.isLoggedIn = false;
     }
 
-    static generateToken (): string{
+    public static generateToken (): string{
         return crypto.randomBytes(64).toString('hex');
+    }
+
+    public static async getAccountByToken(accountToken: string): Promise<Account | undefined> {
+        const accountRepository = getRepository(Account);  
+        return accountRepository.findOne({ where: { sessionToken : accountToken } });
+    }
+
+    public async saveChanges() {
+        const accountRepository = getRepository(Account);  
+        await accountRepository.save(this);
     }
 }

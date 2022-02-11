@@ -7,57 +7,70 @@ import * as http from 'http';
 import {createConnection, createConnections, Connection, ConnectionOptions} from "typeorm";
 import { Account } from './entity/account';
 import { Character } from './entity/character';
-import { Board } from './entity/Board';
+import { Board } from './entity/board';
+import { RequestProcessor } from './utility/request-processor';
 
-async function main(){
-    dotenv.config();
+class App {
+    public board: Board;
+    public wss: WebSocket.Server;
+    public loggedAccounts : any[];
 
-    const options: ConnectionOptions = {
-        type: "sqlite",
-        database: "./db.sqlite",
-        entities: [ Account, Character ],
-        synchronize: true
+    private clientIdCounter : number = 0;
+
+    constructor(){
+        this.run();
     }
-    const connection: Connection = await createConnection(options);
 
-    const app = express();
-    app.use(express.json());
-    const expressRoutes = new ExpressRotuer(app);
-    expressRoutes.init();
+    async run(){
+        dotenv.config();
 
-    const server = http.createServer(app);
-    const wss = new WebSocket.Server({ server });   
+        const options: ConnectionOptions = {
+            type: "sqlite",
+            database: "./db.sqlite",
+            entities: [ Account, Character ],
+            synchronize: true
+        }
+        const connection: Connection = await createConnection(options);
 
-    //Read from environment
-    const board = new Board(parseInt(process.env.BOARD_HEIGHT ?? "10"), 
-        parseInt(process.env.BOARD_WIDTH ?? "10"));
+        const app = express();
+        app.use(express.json());
+        const expressRoutes = new ExpressRotuer(app);
+        expressRoutes.init();
 
-    //TODO: https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
-    //TODO: Move to another class and start working on interaction
-    /*
-    - Request to join using token (must create character if not exists and add to board if space available)
-    - Request to move the character
-    - Request to get board state
-    - Notification when character joined/moved
-    - Notification when character left
-    */
-    wss.on('connection', (ws: WebSocket) => {
+        const server = http.createServer(app);
+        this.wss = new WebSocket.Server({ server });   
 
-        ws.on('message', (message: string) => {
-            console.log('received: %s', message);
-            ws.send(`Hello, you sent -> ${message}`);
+        this.board = new Board(
+            parseInt(process.env.BOARD_HEIGHT ?? "10"), 
+            parseInt(process.env.BOARD_WIDTH ?? "10"
+        ));
+
+        //TODO: Move to another module
+        this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
+            (ws as any).id = this.clientIdCounter++;
+            console.info(`New client logged in with id ${(ws as any).id}`);
+
+            ws.on('message', (message: string) => {
+                RequestProcessor.Process(message, ws);
+            });
+
+            //TODO: Improve broken connection detection
+            //REF: https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
+            ws.on('close', function close() {
+                let account : Account = (ws as any).account;
+                if(account){
+                    account.isLoggedIn = false;
+                    account.sessionToken = "";
+                    account.saveChanges();
+                }
+                console.info(`Client with id ${(ws as any).id} disconnected`);
+            });
         });
 
-        ws.on('close', function close() {
-            console.log('disconnected');
+        server.listen(process.env.PORT || 80, () => {
+            console.log('Server started on port '+ (process.env.PORT || 80));
         });
-
-        ws.send('Hi there, I am a WebSocket server');
-    });
-
-    server.listen(process.env.PORT || 80, () => {
-        console.log('Server started on port '+ (process.env.PORT || 80));
-    });
+    }
 }
 
-main().catch(console.error);
+export default new App();
