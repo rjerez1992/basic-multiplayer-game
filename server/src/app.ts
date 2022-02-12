@@ -45,7 +45,6 @@ class App {
             parseInt(process.env.BOARD_WIDTH ?? "10"
         ));
 
-        //TODO: Move to another module
         this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
             (ws as any).id = this.clientIdCounter++;
             console.info(`New client logged in with id ${(ws as any).id}`);
@@ -54,8 +53,6 @@ class App {
                 RequestProcessor.Process(message, ws);
             });
 
-            //TODO: Improve broken connection detection
-            //REF: https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
             ws.on('close', function close() {
                 let account : Account = (ws as any).account;
                 if(account){

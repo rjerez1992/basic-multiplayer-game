@@ -3,7 +3,8 @@ import app from "../app";
 import { Account } from "../entity/account";
 import { Character } from "../entity/character";
 import { INetworkAction } from "../entity/network-action";
-import { InputAction, OutputAction } from "./actions.enum";
+import { InputAction } from "./input-action.enum";
+import { OutputAction } from "./output-action.enum";
 
 export class RequestProcessor {
     constructor(){}
@@ -34,13 +35,12 @@ export class RequestProcessor {
                 if(!app.board.Add(account.character)){
                     return this.OnCommonError("Board has not space available", source);
                 }
-                
-                //TODO: Store on a dictionary
+
                 (source as any).account = account;
-                //NOTE: IsLoggedIn might be an instance parameter instead of db
                 account.isLoggedIn = true;
                 account.saveChanges();
 
+                RequestProcessor.SendInitialData(source);
                 RequestProcessor.BroadcastMovement(account.character);
                 break;
             }
@@ -48,7 +48,7 @@ export class RequestProcessor {
             case InputAction.MOVE:{
                 let account = (source as any).account;
 
-                //TODO: Differentiate errors from fatal errors. Fatal errors should disconnect the client (?)
+                //TODO: Differentiate errors from fatal errors. Fatal errors should disconnect the client
                 if(!account)
                     return this.OnCommonError("Account must join before moving", source);
                 if(!action.params.direction)
@@ -61,13 +61,9 @@ export class RequestProcessor {
             }
 
             case InputAction.LEAVE: {
-                //TODO: Remove account from socket and or close socket
                 let account = (source as any).account;
-                /*account.sessionToken= "";
-                account.isLoggedIn = false;
-                account.saveChanges();*/
-
                 RequestProcessor.BroadcastLeave(account.character);
+                delete (source as any).account;
                 source.close();
                 break;
             }
@@ -75,6 +71,18 @@ export class RequestProcessor {
                 return this.OnUnkownAction(action, source);
                 break;
         }
+    }
+
+    private static SendInitialData(source: WebSocket){
+        let output: INetworkAction = {
+            action: OutputAction.BOARD_CONFIG,
+            params: {
+                boardHeight: app.board.height,
+                boardWidth: app.board.width,
+                boardPlayers: app.board.CharacterList()
+            }
+        }
+        source.send(JSON.stringify(output));
     }
 
     public static BroadcastMovement(character: Character){
