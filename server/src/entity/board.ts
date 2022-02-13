@@ -34,6 +34,16 @@ export class Board {
         return true;
     }
 
+    public Remove(character: Character): boolean {
+        for (let i = 0; i < this.height; i++) {
+            for (let j = 0; j < this.width; j++) {
+                if(this.tiles[i][j] != undefined && this.tiles[i][j] instanceof Character && this.tiles[i][j].id === character.id)
+                    this.tiles[i][j] = undefined;
+            }   
+        }
+        return true;
+    }
+
     public CharacterList(): Character[] {
         let characters = [];
         for (let i = 0; i < this.height; i++) {

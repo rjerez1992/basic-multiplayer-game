@@ -7,73 +7,86 @@ import { InputAction } from "./input-action.enum";
 import { OutputAction } from "./output-action.enum";
 
 export class RequestProcessor {
-    constructor(){}
+    constructor() { }
 
-    static Process(message: string, source: WebSocket){
+    static process(message: string, source: WebSocket) {
         let networkAction: INetworkAction;
 
         try {
             networkAction = JSON.parse(message);
         } catch (e) {
-            return this.OnParsingError(message, source);
+            return this.onParsingError(message, source);
         }
 
         console.info(`Action received ${networkAction.action} from client ${(source as any).id}`);
-        this.Execute(networkAction, source);
+        this.execute(networkAction, source);
     }
 
-    private static async Execute(action: INetworkAction, source: WebSocket){
+    static accountCleanup(account: Account) {
+        if (account) {
+            account.isLoggedIn = false;
+            account.sessionToken = "";
+            account.saveChanges();
+        }
+        if(account.character){
+            app.board.Remove(account.character);
+            RequestProcessor.broadcastLeave(account.character);
+        }
+    }
+
+    private static async execute(action: INetworkAction, source: WebSocket) {
         switch (action.action) {
-            case InputAction.JOIN:{
+            case InputAction.JOIN: {
                 let token: string = action.params.token;
                 let account = await Account.getAccountByToken(token);
 
-                if(!account || token === "")
-                    return this.OnCommonError("Invalid account token. Did you logged first?", source);
-                if(account.isLoggedIn)
-                    return this.OnCommonError("Account already logged in", source);
-                if(!app.board.Add(account.character)){
-                    return this.OnCommonError("Board has not space available", source);
+                if (!account || token === "")
+                    return this.onCommonError("Invalid account token. Did you logged first?", source);
+                if (account.isLoggedIn)
+                    return this.onCommonError("Account already logged in", source);
+                if (!app.board.Add(account.character)) {
+                    return this.onCommonError("Board has not space available", source);
                 }
 
                 (source as any).account = account;
                 account.isLoggedIn = true;
                 account.saveChanges();
 
-                RequestProcessor.SendInitialData(source);
-                RequestProcessor.BroadcastMovement(account.character);
+                RequestProcessor.sendInitialData(source);
+                RequestProcessor.broadcastMovement(account.character);
                 break;
             }
 
-            case InputAction.MOVE:{
+            case InputAction.MOVE: {
                 let account = (source as any).account;
 
                 //TODO: Differentiate errors from fatal errors. Fatal errors should disconnect the client
-                if(!account)
-                    return this.OnCommonError("Account must join before moving", source);
-                if(!action.params.direction)
-                    return this.OnCommonError("Movement direction is invalid", source);
-                if(!app.board.Move(account.character, action.params.direction))
-                    return this.OnCommonError("Unable to move to desire direction", source);
-            
-                RequestProcessor.BroadcastMovement(account.character);
+                if (!account)
+                    return this.onCommonError("Account must join before moving", source);
+                if (!action.params.direction)
+                    return this.onCommonError("Movement direction is invalid", source);
+                if (!app.board.Move(account.character, action.params.direction))
+                    return this.onCommonError("Unable to move to desire direction", source);
+
+                RequestProcessor.broadcastMovement(account.character);
                 break;
             }
 
             case InputAction.LEAVE: {
                 let account = (source as any).account;
-                RequestProcessor.BroadcastLeave(account.character);
+                app.board.Remove(account.character)
+                RequestProcessor.broadcastLeave(account.character);
                 delete (source as any).account;
                 source.close();
                 break;
             }
             default:
-                return this.OnUnkownAction(action, source);
+                return this.onUnkownAction(action, source);
                 break;
         }
     }
 
-    private static SendInitialData(source: WebSocket){
+    private static sendInitialData(source: WebSocket) {
         let output: INetworkAction = {
             action: OutputAction.BOARD_CONFIG,
             params: {
@@ -85,9 +98,9 @@ export class RequestProcessor {
         source.send(JSON.stringify(output));
     }
 
-    public static BroadcastMovement(character: Character){
+    public static broadcastMovement(character: Character) {
         let outputAction: INetworkAction = {
-            action : OutputAction.CHR_MOVED,
+            action: OutputAction.CHR_MOVED,
             params: { characterId: character.id, x: character.x, y: character.y }
         }
 
@@ -98,9 +111,9 @@ export class RequestProcessor {
         });
     }
 
-    public static BroadcastLeave(character: Character){
+    public static broadcastLeave(character: Character) {
         let outputAction: INetworkAction = {
-            action : OutputAction.CHR_LEFT,
+            action: OutputAction.CHR_LEFT,
             params: { characterId: character.id }
         }
 
@@ -111,7 +124,7 @@ export class RequestProcessor {
         });
     }
 
-    public static OnCommonError(message: string, source: WebSocket){
+    public static onCommonError(message: string, source: WebSocket) {
         let output: INetworkAction = {
             action: OutputAction.ERROR,
             params: {
@@ -121,7 +134,7 @@ export class RequestProcessor {
         source.send(JSON.stringify(output));
     }
 
-    private static OnUnkownAction(networkAction: INetworkAction, source: WebSocket){
+    private static onUnkownAction(networkAction: INetworkAction, source: WebSocket) {
         let output: INetworkAction = {
             action: OutputAction.ERROR,
             params: {
@@ -132,7 +145,7 @@ export class RequestProcessor {
         source.send(JSON.stringify(output));
     }
 
-    private static OnParsingError(message: string, source: WebSocket){
+    private static onParsingError(message: string, source: WebSocket) {
         let output: INetworkAction = {
             action: OutputAction.ERROR,
             params: {
