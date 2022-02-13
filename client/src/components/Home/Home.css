@@ -1,0 +1,10 @@
+#enter-button {
+    border: 0px;
+    border-radius:  0px;
+    background-color: #4169E1;
+    height: 70px;
+    width: 250px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5em;
+}

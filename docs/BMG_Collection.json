@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "b4e2277e-791c-4099-b61a-7e306beee65a",
+		"name": "Basic multiplayer game API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "account.token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"exampleUsername\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/account/token",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"token"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "account.token",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"exampleUsername\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/account/token",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"account",
+								"token"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "259"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"103-P/G3oTkhGb5zmfaHQDmA2BlaMfM\""
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 13 Feb 2022 19:10:48 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"username\": \"exampleUsername\",\n    \"sessionToken\": \"41fc9341c5a80b83f36ac3453f456a69e1701c4a1a5bcf81238145d6c7b00cbee4af1fbc290d5df9b27034349fca3a02601ce0bc1e2dd7d4d0166ce3ddb142f0\",\n    \"isLoggedIn\": false,\n    \"id\": 25,\n    \"character\": {\n        \"x\": 0,\n        \"y\": 0,\n        \"blocksMovement\": true,\n        \"id\": 25\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "account.create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"exampleUsername\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/account/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"account",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "account.create",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"exampleUsername\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/account/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"account",
+								"create"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "131"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"83-7hwsVBrtM+cUzExYcGVWo/E8G80\""
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 13 Feb 2022 19:10:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"username\": \"exampleUsername\",\n    \"sessionToken\": \"\",\n    \"isLoggedIn\": false,\n    \"character\": {\n        \"x\": 0,\n        \"y\": 0,\n        \"blocksMovement\": true,\n        \"id\": 25\n    },\n    \"id\": 25\n}"
+				}
+			]
+		}
+	]
+}
