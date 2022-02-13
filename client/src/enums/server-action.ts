@@ -1,4 +1,4 @@
-export enum OutputAction {
+export enum ServerAction {
     ERROR = 5000,
     CHR_MOVED = 5001,
     CHR_LEFT = 5002,

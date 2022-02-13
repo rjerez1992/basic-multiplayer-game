@@ -1,0 +1,51 @@
+# Join >
+{
+    "action": 1001,
+    "params": {"token": "41fc9341c5a80b83f36ac3453f456a69e1701c4a1a5bcf81238145d6c7b00cbee4af1fbc290d5df9b27034349fca3a02601ce0bc1e2dd7d4d0166ce3ddb142f0"}
+}
+
+# Board config < 
+{
+    "action": 5003,
+    "params": {
+        "boardHeight": 20,
+        "boardWidth": 20,
+        "boardPlayers": [
+            {
+                "characterId": 25,
+                "x": 7,
+                "y": 1
+            }
+        ]
+    }
+}
+
+# Player move >
+{
+    "action": 1002,
+    "params": {"direction": 3}
+}
+
+# Player moved <
+{
+    "action": 5001,
+    "params": {
+        "characterId": 25,
+        "x": 7,
+        "y": 1
+    }
+}
+
+# Player leave >
+{
+    "action": 1003,
+    "params": {}
+}
+
+# Player left <
+{
+    "action": 5002,
+    "params": {
+        "characterId": 25
+    }
+}

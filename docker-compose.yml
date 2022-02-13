@@ -12,6 +12,9 @@ services:
       - "8080:80"
     volumes:
       - ./server:/app
+    environment: 
+      BOARD_HEIGHT: 20
+      BOARD_WIDTH: 20
 
   bmg-client:
     build:
@@ -23,7 +26,4 @@ services:
       - "3000:3000"
     volumes:
       - ./client:/app
-    environment: 
-      BOARD_HEIGHT: 20
-      BOARD_WIDTH: 20
       

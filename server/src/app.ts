@@ -1,14 +1,19 @@
 import * as dotenv from 'dotenv';
+import * as http from 'http';
+import * as WebSocket from 'ws';
 import express from 'express';
 import ExpressRotuer from './express.router';
-import "reflect-metadata";
-import * as WebSocket from 'ws';
-import * as http from 'http';
-import { createConnection, createConnections, Connection, ConnectionOptions } from "typeorm";
 import { Account } from './entity/account';
-import { Character } from './entity/character';
 import { Board } from './entity/board';
+import { Character } from './entity/character';
+import {
+    Connection,
+    ConnectionOptions,
+    createConnection,
+    createConnections
+    } from 'typeorm';
 import { RequestProcessor } from './utility/request-processor';
+import 'reflect-metadata';
 
 class App {
     public board: Board;
@@ -41,8 +46,8 @@ class App {
         this.wss = new WebSocket.Server({ server });
 
         this.board = new Board(
-            parseInt(process.env.BOARD_HEIGHT ?? "10"),
-            parseInt(process.env.BOARD_WIDTH ?? "10"
+            parseInt(process.env.BOARD_HEIGHT ?? "20"),
+            parseInt(process.env.BOARD_WIDTH ?? "20"
             ));
 
         this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
