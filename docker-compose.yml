@@ -9,9 +9,7 @@ services:
     image: "bmg-server:dev"
     container_name: "bmg-server"
     ports:
-      - "8080:80"
-    volumes:
-      - ./server:/app
+      - "8080:8080"
     environment: 
       BOARD_HEIGHT: 20
       BOARD_WIDTH: 20
@@ -24,6 +22,4 @@ services:
     container_name: "bmg-client"
     ports:
       - "3000:3000"
-    volumes:
-      - ./client:/app
       

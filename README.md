@@ -75,6 +75,7 @@ npm install
 npm start
 ```
 Then go to the client folder and run the same commands. Once both are up and running, you can join through localhost:3000 (or any port you've defined).
+If you get an error when running npm start on the server, ensure that the start script points to the correct path of the app.js in the dist folder (depending on the environment sometimes tsc might generate it under dist/src).
 
 ### Running tests
 
